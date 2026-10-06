@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Grade Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Student Grade Calculator</h1>
+
+        <label for="subjects">Number of subjects</label>
+        <div class="row">
+            <input type="number" id="subjects" min="1" max="20" placeholder="e.g. 5">
+            <button id="createBtn">Add Subjects</button>
+        </div>
+
+        <div id="marksArea"></div>
+
+        <button id="calcBtn" class="hidden">Calculate</button>
+        <p id="error" class="error"></p>
+
+        <div id="result" class="result hidden">
+            <p>Total Marks: <span id="total"></span></p>
+            <p>Average Percentage: <span id="average"></span></p>
+            <p>Grade: <span id="grade" class="grade"></span></p>
+        </div>
+    </div>
+
+    <script>
+        const subjectsInput = document.getElementById("subjects");
+        const marksArea = document.getElementById("marksArea");
+        const calcBtn = document.getElementById("calcBtn");
+        const errorEl = document.getElementById("error");
+        const resultEl = document.getElementById("result");
+
+        function getGrade(avg) {
+            if (avg >= 90) return "A+";
+            if (avg >= 80) return "A";
+            if (avg >= 70) return "B";
+            if (avg >= 60) return "C";
+            if (avg >= 50) return "D";
+            return "F";
+        }
+
+        document.getElementById("createBtn").addEventListener("click", () => {
+            const n = parseInt(subjectsInput.value, 10);
+            marksArea.innerHTML = "";
+            resultEl.classList.add("hidden");
+            errorEl.textContent = "";
+
+            if (!n || n < 1 || n > 20) {
+                errorEl.textContent = "Enter a number of subjects between 1 and 20.";
+                calcBtn.classList.add("hidden");
+                return;
+            }
+
+            for (let i = 1; i <= n; i++) {
+                marksArea.innerHTML +=
+                    `<label>Subject ${i} (out of 100)</label>
+           <input type="number" class="mark" min="0" max="100" placeholder="0 - 100">`;
+            }
+            calcBtn.classList.remove("hidden");
+        });
+
+        calcBtn.addEventListener("click", () => {
+            const inputs = document.querySelectorAll(".mark");
+            let total = 0;
+            errorEl.textContent = "";
+
+            for (const input of inputs) {
+                const value = parseFloat(input.value);
+                if (isNaN(value) || value < 0 || value > 100) {
+                    errorEl.textContent = "Every mark must be a number between 0 and 100.";
+                    resultEl.classList.add("hidden");
+                    return;
+                }
+                total += value;
+            }
+
+            const average = total / inputs.length;
+            document.getElementById("total").textContent = `${total} / ${inputs.length * 100}`;
+            document.getElementById("average").textContent = average.toFixed(2) + "%";
+            document.getElementById("grade").textContent = getGrade(average);
+            resultEl.classList.remove("hidden");
+        });
+    </script>
+</body>
+
+</html>
